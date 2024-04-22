@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+
+    <!-- Office JavaScript API -->
+    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+</head>
+
+<body>
+
+<h2>First Hop</h2>
+
+<p>If you see this message, the secondary popup was blocked.</p>
+<p>Please select "Allow Popups" in the address bar.</p>
+
+<script>
+    Office.onReady(async () => {
+        // Set up broadcast channel listener
+        const channel = new BroadcastChannel('DialogTestChannel');
+        channel.onmessage = (e) => {
+            // Tell the second window to close
+            channel.postMessage('close()');
+            // Send the response from the second window back to the main add-in
+            Office.context.ui.messageParent(e.data, { targetOrigin: "https://127.0.0.1:3000" });
+        };
+        channel.onmessageerror = (e) => {
+            console.error('error from broadcast channel', e);
+        }
+
+        // Open a separate window which simulates the result of an OAuth flow
+        // which is cross-origin or otherwise destroys window.opener and the
+        // ability to communicate back to the add-in iframe directly
+        const url = "https://127.0.0.1:3000/login2.html";
+        const options = `popup,width=400,height=600,left=${window.screenLeft},top=${window.screenTop},noopener,noferrer`;
+        window.open(url, "DoubleJumpTester", options);
+    });
+</script>
+  
+</body>
+
+</html>

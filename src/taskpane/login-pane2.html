@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+</head>
+
+<body>
+
+<h2>Second Hop</h2>
+<h3>Simulated Auth Page Response</h3>
+
+<script>
+    const token = { access_token: "123456" };
+
+    try {
+        const channel = new BroadcastChannel("DialogTestChannel");
+        // First page will send the signal to close after receiving message
+        channel.onmessage = (e) => {
+            if (e.data === "close()") window.close();
+        };
+        // Simulate a 1 second delay to get the OAuth token
+        setTimeout(() => {
+            // Send the token to the first dialog
+            channel.postMessage(JSON.stringify(token))
+        }, 1000);
+        
+    } catch (err) {
+        console.error(err);
+    }
+</script>
+  
+</body>
+
+</html>
